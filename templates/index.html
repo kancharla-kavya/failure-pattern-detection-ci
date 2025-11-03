@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Failure Pattern Detection in CI Logs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+        .metric {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        .success { color: #28a745; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Failure Pattern Detection in CI Logs</h1>
+        
+        <div class="upload-area">
+            <h3>Upload CI Log File</h3>
+            <input type="file" id="logFile" accept=".log,.txt">
+            <br><br>
+            <strong>OR</strong>
+            <br><br>
+            <textarea id="logContent" placeholder="Paste your CI log content here..." 
+                     style="width: 100%; height: 200px; padding: 10px;"></textarea>
+            <br><br>
+            <button onclick="analyzeLogs()">Analyze Logs</button>
+        </div>
+        
+        <div id="loading" style="display: none;">
+            <h3>Analyzing logs... Please wait.</h3>
+        </div>
+        
+        <div id="results" class="results">
+            <h2>Analysis Results</h2>
+            <div id="metrics"></div>
+            <div id="patterns"></div>
+            <div id="suggestions"></div>
+        </div>
+    </div>
+
+    <script>
+        async function analyzeLogs() {
+            const fileInput = document.getElementById('logFile');
+            const textArea = document.getElementById('logContent');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            
+            let logContent = '';
+            
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                logContent = await readFileAsText(file);
+            } else {
+                logContent = textArea.value;
+            }
+            
+            if (!logContent.trim()) {
+                alert('Please provide log content');
+                return;
+            }
+            
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ log_content: logContent })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResults(data.result);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error analyzing logs: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+        
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = e => reject(e);
+                reader.readAsText(file);
+            });
+        }
+        
+        function displayResults(result) {
+            const metricsDiv = document.getElementById('metrics');
+            const patternsDiv = document.getElementById('patterns');
+            const suggestionsDiv = document.getElementById('suggestions');
+            
+            // Display metrics
+            metricsDiv.innerHTML = `
+                <div class="metric">
+                    <h3>Health Score</h3>
+                    <p class="${result.summary.health_score > 80 ? 'success' : result.summary.health_score > 50 ? 'warning' : 'error'}">
+                        ${result.summary.health_score}/100
+                    </p>
+                </div>
+                <div class="metric">
+                    <h3>Total Issues</h3>
+                    <p>${result.summary.total_issues}</p>
+                </div>
+                <div class="metric">
+                    <h3>Errors</h3>
+                    <p class="error">${result.error_count}</p>
+                </div>
+                <div class="metric">
+                    <h3>Warnings</h3>
+                    <p class="warning">${result.warning_count}</p>
+                </div>
+            `;
+            
+            // Display patterns
+            let patternsHtml = '<h3>Detected Patterns</h3><ul>';
+            for (const [category, items] of Object.entries(result.patterns_detected)) {
+                if (category !== 'statistics' && items.length > 0) {
+                    patternsHtml += `<li><strong>${category}:</strong> ${items.length} occurrences</li>`;
+                }
+            }
+            patternsHtml += '</ul>';
+            patternsDiv.innerHTML = patternsHtml;
+            
+            // Display suggestions
+            suggestionsDiv.innerHTML = '<h3>Recommendations</h3><p>Based on the analysis, consider reviewing the detected patterns and addressing the most frequent issues.</p>';
+            
+            results.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

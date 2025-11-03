@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-11-03T20:42:03.066504",
+  "total_entries_analyzed": 0,
+  "error_count": 0,
+  "warning_count": 0,
+  "patterns_detected": {
+    "statistics": {
+      "total_patterns_detected": 0,
+      "pattern_counts": {},
+      "most_common_category": null
+    }
+  },
+  "log_entries": [],
+  "summary": {
+    "total_issues": 0,
+    "common_patterns": {},
+    "most_frequent_error": null,
+    "health_score": 100
+  }
+}

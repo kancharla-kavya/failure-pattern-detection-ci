@@ -1,0 +1,132 @@
+{
+  "timestamp": "2025-11-03T20:37:31.180251",
+  "total_entries_analyzed": 7,
+  "error_count": 4,
+  "warning_count": 3,
+  "patterns_detected": {
+    "test_failures": [
+      {
+        "line_number": 4,
+        "content": "ERROR: test_user_authentication FAILED",
+        "pattern": "Test.*failed"
+      },
+      {
+        "line_number": 7,
+        "content": "AssertionError: 404 != 200",
+        "pattern": "AssertionError"
+      },
+      {
+        "line_number": 8,
+        "content": "ERROR: test_database_connection FAILED",
+        "pattern": "Test.*failed"
+      }
+    ],
+    "resource_issues": [
+      {
+        "line_number": 11,
+        "content": "ERROR: Timeout after 300 seconds in integration test",
+        "pattern": "TIMEOUT"
+      }
+    ],
+    "build_errors": [
+      {
+        "line_number": 12,
+        "content": "FAILED: Build failed with 3 errors, 2 warnings",
+        "pattern": "Build failed"
+      }
+    ],
+    "statistics": {
+      "total_patterns_detected": 5,
+      "pattern_counts": {
+        "test_failures": 3,
+        "resource_issues": 1,
+        "build_errors": 1
+      },
+      "most_common_category": "test_failures"
+    }
+  },
+  "log_entries": [
+    {
+      "line_number": 2,
+      "content": "WARNING: Using Python 3.8 (end of life soon)",
+      "timestamp": "2025-11-03T20:37:31.177401",
+      "level": "warning",
+      "patterns_found": [
+        "warning"
+      ]
+    },
+    {
+      "line_number": 4,
+      "content": "ERROR: test_user_authentication FAILED",
+      "timestamp": "2025-11-03T20:37:31.177401",
+      "level": "error",
+      "patterns_found": [
+        "error",
+        "test_failure"
+      ]
+    },
+    {
+      "line_number": 7,
+      "content": "AssertionError: 404 != 200",
+      "timestamp": "2025-11-03T20:37:31.177401",
+      "level": "error",
+      "patterns_found": [
+        "error",
+        "test_failure"
+      ]
+    },
+    {
+      "line_number": 8,
+      "content": "ERROR: test_database_connection FAILED",
+      "timestamp": "2025-11-03T20:37:31.177401",
+      "level": "error",
+      "patterns_found": [
+        "error",
+        "test_failure"
+      ]
+    },
+    {
+      "line_number": 9,
+      "content": "WARNING: Test coverage below threshold (78% < 85%)",
+      "timestamp": "2025-11-03T20:37:31.177401",
+      "level": "warning",
+      "patterns_found": [
+        "warning"
+      ]
+    },
+    {
+      "line_number": 11,
+      "content": "ERROR: Timeout after 300 seconds in integration test",
+      "timestamp": "2025-11-03T20:37:31.177401",
+      "level": "warning",
+      "patterns_found": [
+        "error",
+        "timeout"
+      ]
+    },
+    {
+      "line_number": 12,
+      "content": "FAILED: Build failed with 3 errors, 2 warnings",
+      "timestamp": "2025-11-03T20:37:31.177401",
+      "level": "error",
+      "patterns_found": [
+        "error",
+        "warning",
+        "test_failure",
+        "build_failure"
+      ]
+    }
+  ],
+  "summary": {
+    "total_issues": 7,
+    "common_patterns": {
+      "error": 5,
+      "test_failure": 4,
+      "warning": 3,
+      "timeout": 1,
+      "build_failure": 1
+    },
+    "most_frequent_error": "error",
+    "health_score": 54
+  }
+}
