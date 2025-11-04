@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import json
+import os
 from src.log_analyzer import LogAnalyzer
 from src.utils import save_analysis_result
-import os
 
 app = Flask(__name__)
 analyzer = LogAnalyzer()
@@ -16,6 +16,8 @@ def analyze_logs():
     try:
         if 'log_file' in request.files:
             file = request.files['log_file']
+            if file.filename == '':
+                return jsonify({'error': 'No file selected'}), 400
             log_content = file.read().decode('utf-8')
         else:
             log_content = request.json.get('log_content', '')
@@ -51,4 +53,4 @@ def health_check():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port, debug=True)  # Changed to debug=True for development
