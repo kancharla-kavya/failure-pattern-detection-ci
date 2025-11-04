@@ -22,7 +22,11 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd Failure-Pattern-Detection-in-CI-logs
+          npm install
 
       - name: Run Failure Pattern Detector
-        run: node failurePatternDetector.js sample_ci_log.txt --json
+        run: |
+          cd Failure-Pattern-Detection-in-CI-logs
+          node failurePatternDetector.js sample_ci_log.txt --json
