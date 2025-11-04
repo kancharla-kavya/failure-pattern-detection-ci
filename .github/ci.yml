@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Python CI
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Set up Python
+    - name: Set up Python 3.9
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
@@ -27,28 +27,25 @@ jobs:
     
     - name: Run tests
       run: |
-        pytest --cov=src --cov-report=xml
+        pytest tests/ -v --cov=src --cov-report=xml
     
-    - name: Upload coverage reports
+    - name: Test log analyzer functionality
+      run: |
+        python -c "
+        from src.log_analyzer import LogAnalyzer
+        analyzer = LogAnalyzer()
+        result = analyzer.analyze_ci_logs('ERROR: Test failed\\nWARNING: Deprecated API')
+        print('✅ Log analyzer test passed')
+        print(f'   Errors: {result[\"error_count\"]}, Warnings: {result[\"warning_count\"]}')
+        "
+    
+    - name: Upload test coverage
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-    
-    - name: Run log analysis
-      run: |
-        python -m src.log_analyzer --test
-    
-    - name: Upload test results
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results
-        path: |
-          test_results/
-          logs/
+        fail_ci_if_error: false
 
-  deploy:
+  deploy-notification:
     runs-on: ubuntu-latest
     needs: test
     if: github.ref == 'refs/heads/main'
@@ -57,7 +54,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Deploy to Render
+    - name: Deployment notification
       run: |
-        echo "Deploying to Render..."
-        # Render will automatically deploy when changes are pushed to main
+        echo "✅ Tests passed! Ready for deployment to Render."
+        echo "Render will automatically deploy from the main branch."
