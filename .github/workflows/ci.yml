@@ -38,12 +38,6 @@ jobs:
         print('✅ Log analyzer test passed')
         print(f'   Errors: {result[\"error_count\"]}, Warnings: {result[\"warning_count\"]}')
         "
-    
-    - name: Upload test coverage
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        fail_ci_if_error: false
 
   deploy-notification:
     runs-on: ubuntu-latest
@@ -57,4 +51,3 @@ jobs:
     - name: Deployment notification
       run: |
         echo "✅ Tests passed! Ready for deployment to Render."
-        echo "Render will automatically deploy from the main branch."
